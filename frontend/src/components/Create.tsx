@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';  // useHistory の代わりに useNavigate を使用
-import './Create.css';  // CSSファイルをインポート
+import { useNavigate } from 'react-router-dom';
+import './Create.css';
 
 interface Address {
   prefecture: string;
@@ -35,12 +35,14 @@ const Create: React.FC = () => {
       });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault(); // これでデフォルトのフォーム送信動作を防ぎます
 
     axios.post('/api/events', {
+      zipcode,
       prefecture,
-      region: `${city} ${town}`,
+      city,
+      town,
       gender,
       participants,
       age
@@ -55,7 +57,7 @@ const Create: React.FC = () => {
       setGender('');
       setParticipants('');
       setAge('');
-      navigate('/');  // ホームページにリダイレクト
+      navigate('/');
     })
     .catch(error => {
       console.error('Error creating event:', error);
@@ -65,43 +67,41 @@ const Create: React.FC = () => {
   return (
     <div className="container">
       <h1>飲み会を募集する</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>郵便番号:</label>
-          <input type="text" value={zipcode} onChange={(e) => setZipcode(e.target.value)} />
-          <button type="button" onClick={handleZipcodeSearch}>住所を取得</button>
-        </div>
-        {address && (
-          <div className="address">
-            <div>
-              <label>県:</label>
-              <input type="text" value={prefecture} onChange={(e) => setPrefecture(e.target.value)} />
-            </div>
-            <div>
-              <label>市区町村:</label>
-              <input type="text" value={city} onChange={(e) => setCity(e.target.value)} />
-              <input type="text" value={town} onChange={(e) => setTown(e.target.value)} />
-            </div>
+      <div>
+        <label>郵便番号:</label>
+        <input type="text" value={zipcode} onChange={(e) => setZipcode(e.target.value)} />
+        <button type="button" onClick={handleZipcodeSearch}>住所を取得</button>
+      </div>
+      {address && (
+        <div className="address">
+          <div>
+            <label>県:</label>
+            <input type="text" value={prefecture} onChange={(e) => setPrefecture(e.target.value)} />
           </div>
-        )}
-        <div>
-          <label>性別:</label>
-          <select value={gender} onChange={(e) => setGender(e.target.value)}>
-            <option value="">選択してください</option>
-            <option value="male">男性</option>
-            <option value="female">女性</option>
-          </select>
+          <div>
+            <label>市区町村:</label>
+            <input type="text" value={city} onChange={(e) => setCity(e.target.value)} />
+            <input type="text" value={town} onChange={(e) => setTown(e.target.value)} />
+          </div>
         </div>
-        <div>
-          <label>人数:</label>
-          <input type="number" value={participants} onChange={(e) => setParticipants(e.target.value)} />
-        </div>
-        <div>
-          <label>年齢:</label>
-          <input type="number" value={age} onChange={(e) => setAge(e.target.value)} />
-        </div>
-        <button type="submit">募集する</button>
-      </form>
+      )}
+      <div>
+        <label>性別:</label>
+        <select value={gender} onChange={(e) => setGender(e.target.value)}>
+          <option value="">選択してください</option>
+          <option value="male">男性</option>
+          <option value="female">女性</option>
+        </select>
+      </div>
+      <div>
+        <label>人数:</label>
+        <input type="number" value={participants} onChange={(e) => setParticipants(e.target.value)} />
+      </div>
+      <div>
+        <label>年齢:</label>
+        <input type="number" value={age} onChange={(e) => setAge(e.target.value)} />
+      </div>
+      <button type="button" onClick={handleSubmit}>募集する</button>
     </div>
   );
 };
