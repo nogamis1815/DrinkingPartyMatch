@@ -17,6 +17,8 @@ class CreateEventsTable extends Migration
             $table->integer('participants');
             $table->integer('age');
             $table->enum('gender', ['male', 'female']);
+            $table->string('photo')->nullable();
+            $table->text('remarks')->nullable();
             $table->timestamps();
         });
     }

@@ -10,7 +10,7 @@ class Event extends Model
     use HasFactory;
 
     protected $fillable = [
-        'zipcode', 'prefecture', 'city', 'town', 'participants', 'age', 'gender'
+        'zipcode', 'prefecture', 'city', 'town', 'participants', 'age', 'gender', 'photo', 'remarks'
     ];
 
     public function likes()

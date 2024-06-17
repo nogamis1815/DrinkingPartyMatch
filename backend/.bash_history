@@ -97,3 +97,10 @@ php artisan -v
 exit
 composer --version
 exit
+git status
+php  artisan migrate
+php artisan migrate:rollback
+php  artisan migrate
+php artisan migrate:rollback
+php  artisan migrate
+exit
