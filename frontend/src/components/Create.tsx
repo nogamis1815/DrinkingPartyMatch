@@ -18,6 +18,8 @@ const Create: React.FC = () => {
   const [prefecture, setPrefecture] = useState<string>('');
   const [city, setCity] = useState<string>('');
   const [town, setTown] = useState<string>('');
+  const [photo, setPhoto] = useState<File | null>(null); // 画像ファイルを保持するための状態
+  const [remarks, setRemarks] = useState<string>(''); // 備考を保持するための状態
 
   const navigate = useNavigate();
 
@@ -38,14 +40,23 @@ const Create: React.FC = () => {
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault(); // これでデフォルトのフォーム送信動作を防ぎます
 
-    axios.post('/api/events', {
-      zipcode,
-      prefecture,
-      city,
-      town,
-      gender,
-      participants,
-      age
+    const formData = new FormData();
+    formData.append('zipcode', zipcode);
+    formData.append('prefecture', prefecture);
+    formData.append('city', city);
+    formData.append('town', town);
+    formData.append('gender', gender);
+    formData.append('participants', participants);
+    formData.append('age', age);
+    if (photo) {
+      formData.append('photo', photo);
+    }
+    formData.append('remarks', remarks);
+
+    axios.post('/api/events', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     })
     .then(response => {
       console.log('Event created:', response.data);
@@ -57,6 +68,8 @@ const Create: React.FC = () => {
       setGender('');
       setParticipants('');
       setAge('');
+      setPhoto(null);
+      setRemarks('');
       navigate('/');
     })
     .catch(error => {
@@ -100,6 +113,14 @@ const Create: React.FC = () => {
       <div>
         <label>年齢:</label>
         <input type="number" value={age} onChange={(e) => setAge(e.target.value)} />
+      </div>
+      <div>
+        <label>写真:</label>
+        <input type="file" onChange={(e) => setPhoto(e.target.files ? e.target.files[0] : null)} />
+      </div>
+      <div>
+        <label>備考:</label>
+        <textarea value={remarks} onChange={(e) => setRemarks(e.target.value)} />
       </div>
       <button type="button" onClick={handleSubmit}>募集する</button>
     </div>
