@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  # Laravel service
+  laravel-app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: laravel-app
+    container_name: laravel-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./backend:/var/www
+    networks:
+      app-network:
+        ipv4_address: 172.30.0.2
+    ports:
+      - "9000:9000"
+
+  # MySQL service
+  db:
+    platform: linux/amd64
+    image: mysql:5.7
+    container_name: mysql-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      app-network:
+        ipv4_address: 172.30.0.3
+
+  # React service
+  react-app:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: react-app
+    container_name: react-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    networks:
+      app-network:
+        ipv4_address: 172.30.0.4
+
+  # Nginx service
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    image: nginx
+    container_name: nginx
+    restart: unless-stopped
+    volumes:
+      - /var/log/nginx:/var/log/nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - laravel-app
+      - react-app
+    networks:
+      app-network:
+        ipv4_address: 172.30.0.5
+
+networks:
+  app-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
+
+volumes:
+  dbdata:
+    driver: local
