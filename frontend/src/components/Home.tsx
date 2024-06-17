@@ -11,6 +11,8 @@ interface Event {
   participants: number;
   age: number;
   gender: string;
+  photo?: string;
+  remarks?: string;
 }
 
 const Home: React.FC = () => {
@@ -18,7 +20,6 @@ const Home: React.FC = () => {
     const [events, setEvents] = useState<Event[]>([]);
 
     useEffect(() => {
-        // 飲み会一覧を取得するAPIを呼び出す
         axios.get('/api/events')
             .then(response => {
                 setEvents(response.data);
@@ -53,6 +54,8 @@ const Home: React.FC = () => {
                             <p>性別: {event.gender}</p>
                             <p>人数: {event.participants}</p>
                             <p>年齢: {event.age}</p>
+                            {event.remarks && <p>備考: {event.remarks}</p>}
+                            {event.photo && <img src={`/storage/${event.photo}`} alt="飲み会の写真" style={{ maxWidth: '200px', height: 'auto' }} />}
                         </li>
                     ))}
                 </ul>
