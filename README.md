@@ -4,7 +4,7 @@
 1. **リポジトリのクローン**
    ```bash
    git clone https://github.com/nogamis1815/DrinkingPartyMatch.git
-   cd DrinkingPartyMatch
+   cd DrinkingPartyMatch/backend
 2. **環境変数ファイルのコピー**
    ```bash
     cp .env.example .env
