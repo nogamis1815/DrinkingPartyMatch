@@ -8,6 +8,13 @@ use App\Models\Event;
 
 class EventController extends Controller
 {
+    public function index()
+    {
+        // 全てのイベントを取得
+        $events = Event::all();
+        return response()->json($events);
+    }
+
     public function store(Request $request)
     {
         // dd($request);
