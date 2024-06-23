@@ -9,7 +9,12 @@ interface Address {
   town: string;
 }
 
-const Create: React.FC = () => {
+interface CreateProps {
+  onClose: () => void;
+  onEventCreated: () => void;
+}
+
+const Create: React.FC<CreateProps> = ({ onClose, onEventCreated }) => {
   const [zipcode, setZipcode] = useState<string>('');
   const [address, setAddress] = useState<Address | null>(null);
   const [gender, setGender] = useState<string>('');
@@ -18,8 +23,8 @@ const Create: React.FC = () => {
   const [prefecture, setPrefecture] = useState<string>('');
   const [city, setCity] = useState<string>('');
   const [town, setTown] = useState<string>('');
-  const [photo, setPhoto] = useState<File | null>(null); // 画像ファイルを保持するための状態
-  const [remarks, setRemarks] = useState<string>(''); // 備考を保持するための状態
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [remarks, setRemarks] = useState<string>('');
 
   const navigate = useNavigate();
 
@@ -38,8 +43,8 @@ const Create: React.FC = () => {
   };
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault(); // これでデフォルトのフォーム送信動作を防ぎます
-
+    e.preventDefault();
+  
     const formData = new FormData();
     formData.append('zipcode', zipcode);
     formData.append('prefecture', prefecture);
@@ -52,7 +57,7 @@ const Create: React.FC = () => {
       formData.append('photo', photo);
     }
     formData.append('remarks', remarks);
-
+  
     axios.post('/api/events', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -70,16 +75,26 @@ const Create: React.FC = () => {
       setAge('');
       setPhoto(null);
       setRemarks('');
-      navigate('/');
+      onEventCreated(); // イベントが作成された後にイベントリストを更新
+      onClose(); // モーダルを閉じる
     })
     .catch(error => {
-      console.error('Error creating event:', error);
+      if (error.response) {
+        // サーバーがレスポンスを返した場合
+        console.error('Validation errors:', error.response.data.errors);
+      } else if (error.request) {
+        // リクエストが送信されたがレスポンスがない場合
+        console.error('Error request:', error.request);
+      } else {
+        // それ以外のエラー
+        console.error('Error', error.message);
+      }
     });
   };
 
   return (
     <div className="container">
-      <h1>飲み会を募集する</h1>
+      <h1>飲み会情報の入力</h1>
       <div>
         <label>郵便番号:</label>
         <input type="text" value={zipcode} onChange={(e) => setZipcode(e.target.value)} />
